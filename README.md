@@ -83,5 +83,38 @@ export default FruitList;
 
 The FruitManager component is responsible for rendering each of the fruit-related components (i.e. FruitList, FruitSeller, FruitQuickAdd, and FruitBulkAdd), so create a container component named FruitManagerContainer to handle all of the store interaction for the "Fruit" section of the page.
 
+As a starting point, here's the code for the FruitManagerContainer component:
+
+```js
+    // ./src/components/FruitManagerContainer.js
+
+import React from 'react';
+import store from '../store';
+import FruitManager from './FruitManager';
+
+class FruitManagerContainer extends React.Component {
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => {
+      this.forceUpdate();
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
+
+  render() {
+    const { fruit } = store.getState();
+
+    return (
+      <FruitManager fruit={fruit} />
+    );
+  }
+}
+
+export default FruitManagerContainer;
+```
 
 
