@@ -295,3 +295,65 @@ export default FruitQuickAdd;
 ```
 
 The change between the original and refactored FruitQuickAdd component isn't as dramatic as the FruitList component example, but it's still a significant improvement to the overall separation of concerns. The FruitQuickAdd component is now strictly concerned with rendering the UI and handling user generated events (i.e. button clicks) and the FruitManagerContainer component is now strictly concerned with interacting with the Redux store.
+
+<h1>
+Reviewing the completed container component
+</h1>
+
+The FruitManagerContainer container component can continue to be expanded until each of its child presentational components no longer interact directly with the store. Here's a look at the completed FruitManagerContainer component:
+
+```js
+    // ./src/components/FruitManagerContainer.js
+
+import React from 'react';
+import store from '../store';
+import { addFruit, addFruits, sellFruit, sellOut } from '../actions/fruitActions';
+import FruitManager from './FruitManager';
+
+class FruitManagerContainer extends React.Component {
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => {
+      this.forceUpdate();
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
+
+  add = (fruit) => {
+    store.dispatch(addFruit(fruit));
+  }
+
+  addBulk = (fruit) => {
+    store.dispatch(addFruits(fruit));
+  }
+
+  sell = (fruit) => {
+    store.dispatch(sellFruit(fruit));
+  }
+
+  sellAll = () => {
+    store.dispatch(sellOut());
+  }
+
+  render() {
+    const { fruit } = store.getState();
+    const distinctFruit = Array.from(new Set(fruit)).sort();
+
+    return (
+      <FruitManager
+        fruit={fruit}
+        distinctFruit={distinctFruit}
+        add={this.add}
+        addBulk={this.addBulk}
+        sell={this.sell}
+        sellAll={this.sellAll} />
+    );
+  }
+}
+
+export default FruitManagerContainer;
+```
