@@ -171,3 +171,127 @@ export default FruitList;
 
 Reminder: Using component props to pass a value down the component hierarchy is known as prop threading.
 
+<h1>
+Using a container component to dispatch actions
+</h1>
+
+Here's the current version of the FruitQuickAdd component that dispatches the ADD_FRUIT action to add a fruit to the fruit stand:
+
+```js
+// ./src/components/FruitQuickAdd.js
+
+import React from 'react';
+import store from '../store';
+import { addFruit } from '../actions/fruitActions';
+
+class FruitQuickAdd extends React.Component {
+  addFruitClick = (event) => {
+    const fruit = event.target.innerText;
+    store.dispatch(addFruit(fruit));
+  }
+
+  render() {
+    return (
+      <div>
+        <h3>Quick Add</h3>
+        <button onClick={this.addFruitClick}>APPLE</button>
+        <button onClick={this.addFruitClick}>ORANGE</button>
+      </div>  
+    );
+  }
+}
+
+export default FruitQuickAdd;
+```
+
+To prepare to refactor the FruitQuickAdd component into a presentational component, update the FruitManagerContainer component to the following code:
+
+```js
+    // ./src/components/FruitManagerContainer.js
+
+import React from 'react';
+import store from '../store';
+import { addFruit } from '../actions/fruitActions';
+import FruitManager from './FruitManager';
+
+class FruitManagerContainer extends React.Component {
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => {
+      this.forceUpdate();
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
+
+  add = (fruit) => {
+    store.dispatch(addFruit(fruit));
+  }
+
+  render() {
+    const { fruit } = store.getState();
+
+    return (
+      <FruitManager
+        fruit={fruit}
+        add={this.add} />
+    );
+  }
+}
+
+export default FruitManagerContainer;
+```
+
+The FruitManager component receives the add prop and in turn uses a prop to pass it down to the FruitQuickAdd component:
+
+```js
+    // ./src/components/FruitManager.js
+
+import React from 'react';
+import FruitList from './FruitList';
+import FruitSeller from './FruitSeller';
+import FruitQuickAdd from './FruitQuickAdd';
+import FruitBulkAdd from './FruitBulkAdd';
+
+const FruitManager = ({ fruit, add }) => {
+  return (
+    <div>
+      <h2>Available Fruit</h2>
+      <FruitList fruit={fruit} />
+      <h2>Fruit Inventory Manager</h2>
+      <FruitSeller />
+      <FruitQuickAdd add={add} />
+      <FruitBulkAdd />
+    </div>
+  );
+};
+
+export default FruitManager;
+```
+
+And finally, the FruitQuickAdd component receives the add callback function via a prop and calls it within a handleClick event handler, passing in the target button's inner text:
+
+```js
+    // ./src/components/FruitQuickAdd.js
+
+import React from 'react';
+
+const FruitQuickAdd = ({ add }) => {
+  const handleClick = (event) => add(event.target.innerText);
+
+  return (
+    <div>
+      <h3>Quick Add</h3>
+      <button onClick={handleClick}>APPLE</button>
+      <button onClick={handleClick}>ORANGE</button>
+    </div>  
+  );
+};
+
+export default FruitQuickAdd;
+```
+
+The change between the original and refactored FruitQuickAdd component isn't as dramatic as the FruitList component example, but it's still a significant improvement to the overall separation of concerns. The FruitQuickAdd component is now strictly concerned with rendering the UI and handling user generated events (i.e. button clicks) and the FruitManagerContainer component is now strictly concerned with interacting with the Redux store.
