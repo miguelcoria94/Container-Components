@@ -117,4 +117,57 @@ class FruitManagerContainer extends React.Component {
 export default FruitManagerContainer;
 ```
 
+Notice that the container component looks just like the original version.
+
+but instead of directly rendering the fruit state, it sets a prop on the FruitManager component to pass the state down the component hierarchy.
+
+The fruitManager component recieves the fruit porp and in turn uses a prop to pass it down to the FruitList component
+
+```js
+    // ./src/components/FruitManager.js
+
+import React from 'react';
+import FruitList from './FruitList';
+import FruitSeller from './FruitSeller';
+import FruitQuickAdd from './FruitQuickAdd';
+import FruitBulkAdd from './FruitBulkAdd';
+
+const FruitManager = ({ fruit }) => {
+  return (
+    <div>
+      <h2>Available Fruit</h2>
+      <FruitList fruit={fruit} />
+      <h2>Fruit Inventory Manager</h2>
+      <FruitSeller />
+      <FruitQuickAdd />
+      <FruitBulkAdd />
+    </div>
+  );
+};
+
+export default FruitManager;
+```
+
+And finally, the FruitList component receives the fruit prop and renders it into an unordered list:
+
+```js
+    // ./src/components/FruitList.js
+
+import React from 'react';
+
+const FruitList = ({ fruit }) => {
+  return (
+    <div>
+      {fruit.length > 0
+        ? <ul>{fruit.map((fruitName, index) => <li key={index}>{fruitName}</li>)}</ul>
+        : <span>No fruit currently in stock!</span>
+      }
+    </div>
+  );
+};
+
+export default FruitList;
+```
+
+Reminder: Using component props to pass a value down the component hierarchy is known as prop threading.
 
