@@ -22,5 +22,17 @@ Presentation components are concerned with how things look and container compone
 Determining where to create containers
 </h1>
 
+Not every component needs to be connected to the store.
+
+Generally, you'll only want to create containers for the 'big' components in your app that represent
+sections of a page and contain smaller purely functional presentaional components.
+
+These larger container components are responsible for interacting with the store and passing state and dispatch props down to all their presentaional children.
+
+For the fruit stand app, a good starting point would be to create two container components, FruitManagerContainer and FarmerManagerContainer, to respectively render the presentational components for the 'Fruit" and "Farmers" sections of the page.
+
+In general, aim to have fewer containers rather than more.
+
+Most of the components you'll write will be presenetational, but you'll need to generate a few containers to connect presentational components to the Redux store.
 
 
