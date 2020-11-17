@@ -10,3 +10,17 @@ Putting all this code into the component with heavy rendering logice tends to ca
 
 Therefore, it's a common pattern in Redux code to seperate presentaitional components from their connected couterparts, called containers.
 
+<h1>
+Comparing presentational and container components
+</h1>
+
+The distinction between presentational components and containers is not technical but rather functional.
+
+Presentation components are concerned with how things look and container components are concerned with how things work.
+
+<h1>
+Determining where to create containers
+</h1>
+
+
+
